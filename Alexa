@@ -1,0 +1,106 @@
+
+from gtts import gTTS
+import os
+import playsound
+import datetime
+import speech_recognition as sr
+import requests
+import pywhatkit
+import wikipedia
+from googletrans import Translator, constants
+import webbrowser
+
+
+
+lang="ar"
+wikipedia.set_lang(lang)  
+translator = Translator()
+
+
+def speak(text):
+    tts=gTTS(text=text,lang=lang)
+    tts.save("hello.mp4")
+    playsound.playsound("hello.mp4",True)
+    os.remove("hello.mp4")
+
+listener = sr.Recognizer()
+
+
+def get_time():
+    return datetime.datetime.now().strftime("%H:%M:%S")
+
+def get_date():
+    return datetime.datetime.now().strftime("%A %m/%d/%Y")
+
+def listen():
+    try:
+        
+        with sr.Microphone() as source:
+            print("انا في الاستماع")
+            
+            voice=listener.listen(source)
+            command=listener.recognize_google(voice, language=lang)
+            if 'اليكسا' in command:
+                print(command)
+                return command
+            else:
+                return ""
+    except:
+           speak("من فضلك أعد ما قولت")
+        
+
+
+def run():
+    v=True
+    while v:
+        command= listen()
+        if not command is None:
+           
+            if 'باي' in command:
+                v=False
+            elif 'ساعه' in command:
+                speak(".الساعة الان هي ." +get_time())
+            elif 'تاريخ' in command:
+                speak(".التاريخ الان هو ." +get_date())
+            elif 'عامله اي' in command:
+                speak(".بخير الحمد لله .")
+            elif 'سمعاني' in command:
+                speak("نعم ولكنه يستغرق بعض الوقت")
+            elif 'اوكي ' in command :
+                speak('اوكيه ريهام')
+             
+            elif 'انا مين' in command:
+                speak('انك ريهام ناصر طالبة في كلية الهندسة قسم اتصالات والكترونيات')
+            
+            elif 'اغنيه' in command or 'موسيقى' in command or 'سوره' in command or 'صوره' in command:
+                command = command.replace('اليكسا', '')   
+                      
+                pywhatkit.playonyt(command)
+            elif 'ثواني' in command:
+                speak("أنا في أنتظارك")
+            elif   'كلميني عن' in command:   
+                command = command.replace('كلميني عن', '')     
+                command = command.replace('اليكسا', '')    
+                info = wikipedia.summary(command,1)
+                speak(info)       
+            elif ' لينكد ان' in command or 'لينكدان' in command:
+                url="https://www.linkedin.com/in/reham-naser-715551260/"
+                webbrowser.open(url)
+            elif 'بشمهندس معتصم' in command or 'باشمهندس معتصم' in command:
+                url='https://www.youtube.com/@moatasemelsayed6226'
+                webbrowser.open(url)
+            elif 'شات جي بي تي' in command:
+                url='https://chatgpt.com/'
+                webbrowser.open(url)
+            elif 'جيت هاب' in command or 'جيت هب' in command or 'جيت اب'in command:
+                url='https://github.com/RehamNaserBasha'
+                webbrowser.open(url)
+            elif 'ثانكس' in command:
+                speak('هذا لطف منك')
+
+            elif  'تصبحي علي خير ' in command:
+                speak("وانتي بخير  ريهام")
+            
+    speak("مع السلامة")
+        
+run()
